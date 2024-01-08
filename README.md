@@ -1,21 +1,23 @@
-# phidgets scripts
+# Measure Humidity and Temperature of your home with Phidgets and Prometheus
 
-Here is how to build a Prometheus Dashboard showing the temperature and humidity in your home.
+Here is how to build a Prometheus Dashboard showing the temperature and humidity in your home, leveraging [Phidgets](https://www.phidgets.com/) and a box running Debian.
 
 ### Hardware
-1. [Phidgets Humidity/Temperature Sensor](https://www.phidgets.com/?prodid=96) - the sensor that will measure temp and humidity
-2. [PhidgetSBC4](https://www.phidgets.com/?prodid=969) - a Debian armhf running on a tiny Allwinner A20 	Dual-Core ARM Cortex-A7
+1. [Phidgets Humidity/Temperature Sensor](https://www.phidgets.com/?prodid=96) - the sensor that will measure temperature and humidity
+2. [PhidgetSBC4](https://www.phidgets.com/?prodid=969) - an armhf [Debian Bullseye](https://www.debian.org/releases/bullseye/) running on a tiny [Allwinner A20](https://linux-sunxi.org/A20)	Dual-Core ARM Cortex-A7
 
 ### Python packages
  - `flask`
  - `prometheus_client`
  - `Phidget22`
 
-### Run it
+### Run
 The `prom.py` file stitches the Promethous gauge and the Phidgets libraries. This exposes a `/metrics` endpoint from where a Prometheus server can scrape metrics.
 
 ### Prometheus
-1. Install prometheus
+[Prometheus](https://prometheus.io/docs/introduction/overview/) is a free software application used for event monitoring and alerting. Install it on a server (more powerful than the Phidgets SBC), which is on the same network (tailscale) as your Phidgets SBC. This machine will be performing periodic HTTP GET calls to the Phidgets SBC box.
+
+1. [Install Prometheus](https://prometheus.io/docs/prometheus/latest/installation/)
 2. Configure it:
 ```sh
 $ cat /etc/prometheus/prometheus.yml
@@ -24,31 +26,16 @@ $ cat /etc/prometheus/prometheus.yml
 ```yaml
 # my global config
 global:
-  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
-  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
-  # scrape_timeout is set to the global default (10s).
+  scrape_interval: 15s
+  evaluation_interval: 15s
 
-# Alertmanager configuration
-alerting:
-  alertmanagers:
-    - static_configs:
-        - targets:
-          # - alertmanager:9093
-
-# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
-rule_files:
-  # - "first_rules.yml"
-  # - "second_rules.yml"
-
-# A scrape configuration containing exactly one endpoint to scrape:
-# Here it's Prometheus itself.
 scrape_configs:
   # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
   - job_name: "prometheus"
 
     # metrics_path defaults to '/metrics'
     # scheme defaults to 'http'.
-
+    # in targets - add the IP address of the Phidgets SBC4 box
     static_configs:
       - targets:
         - 1xx.2xx.3xx.4x:5000
