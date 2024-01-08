@@ -66,14 +66,14 @@ def onTempChange(self, sensorValue, sensorUnit):
     TEMP_HIST.labels(sensorUnit.symbol).observe(sensorValue)
     ## TEMP_GAUGE.inc()      # Increment by 1
     ## TEMP_GAUGE.dec(10)    # Decrement by given value
-    TEMP_GAUGE.labels(sensorUnit.symbol).set(sensor.Value)   # Set to a given value
+    TEMP_GAUGE.labels(sensorUnit.symbol).set(sensorValue)   # Set to a given value
 
 
 def onHumidityChange(self, sensorValue, sensorUnit):
     # print("SensorValue: " + str(sensorValue) + " " + str(sensorUnit.symbol))
     HUMIDITY_CHANGE_COUNT.labels(sensorUnit.symbol).inc()
     HUMIDITY_HIST.labels(sensorUnit.symbol).observe(sensorValue)
-    HUMIDITY_GAUGE.labels(sensorUnit.symbol).set(sensor.Value)   # Set to a given value
+    HUMIDITY_GAUGE.labels(sensorUnit.symbol).set(sensorValue)   # Set to a given value
 
 if __name__ == '__main__':
     voltageRatioInput0 = VoltageRatioInput()
