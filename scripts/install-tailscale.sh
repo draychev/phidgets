@@ -1,9 +1,16 @@
-# Add Tailscale's GPG key
+#!/bin/bash
+
+# This is the script to install Tailscale on the Phidgets SBC4 computer, which is an armhf and ships with Debian Bullseye
+
+# 1. Add Tailscale's GPG key
 mkdir -p --mode=0755 /usr/share/keyrings
 curl -fsSL https://pkgs.tailscale.com/stable/debian/bullseye.noarmor.gpg | tee /usr/share/keyrings/tailscale-archive-keyring.gpg >/dev/null
-# Add the tailscale repository
+
+# 2. Add the tailscale repository
 curl -fsSL https://pkgs.tailscale.com/stable/debian/bullseye.tailscale-keyring.list | tee /etc/apt/sources.list.d/tailscale.list
-# Install Tailscale
+
+# 3. Install Tailscale
 apt-get update && apt-get install tailscale
-# Start Tailscale!
+
+# 4. Start Tailscale!
 tailscale up
