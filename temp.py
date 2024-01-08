@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 from Phidget22.Phidget import *
 from Phidget22.Devices.VoltageRatioInput import *
