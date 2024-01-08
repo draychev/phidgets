@@ -15,5 +15,5 @@ Here is how to build a Prometheus Dashboard showing the temperature and humidity
 The `prom.py` file stitches the Promethous gauge and the Phidgets libraries. This exposes a `/metrics` endpoint from where a Prometheus server can scrape metrics.
 
 ### Prometheus
-- Show a graph of `humidity_gauge{symbol="%"}`
-- Show a graph of `temp_gauge{symbol="°C"}`
+- Show a graph of `humidity_gauge{symbol="%"}` ![prom-humidity](https://github.com/draychev/phidgets/assets/49918230/d8269610-cf66-4790-82fa-9d4ac7eba61e)
+- Show a graph of `temp_gauge{symbol="°C"}` ![prom-temperature](https://github.com/draychev/phidgets/assets/49918230/8b9b7e78-68cd-40c7-9e40-49e9bb3fa8ae)
