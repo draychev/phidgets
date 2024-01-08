@@ -24,21 +24,14 @@ $ cat /etc/prometheus/prometheus.yml
 ```
 
 ```yaml
-# my global config
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
-
 scrape_configs:
-  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
   - job_name: "prometheus"
-
-    # metrics_path defaults to '/metrics'
-    # scheme defaults to 'http'.
-    # in targets - add the IP address of the Phidgets SBC4 box
     static_configs:
       - targets:
-        - 1xx.2xx.3xx.4x:5000
+        - 1.2.3.4:5000
 ```
 4. Connect to the Prometheus server: http://your-prometheus-server:9090/
 5. Query for Humidity and Temperature
