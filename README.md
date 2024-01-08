@@ -40,7 +40,7 @@ scrape_configs:
       - targets:
         - 1xx.2xx.3xx.4x:5000
 ```
-
-4. Query
+4. Connect to the Prometheus server: http://your-prometheus-server:9090/
+5. Query for Humidity and Temperature
 - Show a graph of `humidity_gauge{symbol="%"}` ![prom-humidity](https://github.com/draychev/phidgets/assets/49918230/d8269610-cf66-4790-82fa-9d4ac7eba61e)
 - Show a graph of `temp_gauge{symbol="°C"}` ![prom-temperature](https://github.com/draychev/phidgets/assets/49918230/8b9b7e78-68cd-40c7-9e40-49e9bb3fa8ae)
