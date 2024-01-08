@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from flask import Flask, jsonify, request
-from prometheus_client import make_wsgi_app, Counter, Histogram
+from prometheus_client import make_wsgi_app, Counter, Histogram, Gauge
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 import time
 
@@ -14,6 +14,19 @@ app = Flask(__name__)
 app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
     '/metrics': make_wsgi_app()
 })
+
+TEMP_GAUGE = Gauge(
+    'temp_gauge',
+    'Temperature Celsius',
+    ['symbol'] #labels
+)
+
+HUMIDITY_GAUGE = Gauge(
+    'humidity_gauge',
+    'Humidity Percent',
+    ['symbol'] #labels
+)
+
 
 TEMP_CHANGE_COUNT = Counter(
     'temp_change_count',
@@ -53,6 +66,9 @@ def onTempChange(self, sensorValue, sensorUnit):
     print("----------")
     TEMP_CHANGE_COUNT.labels(sensorUnit.symbol).inc()
     TEMP_HIST.labels(sensorUnit.symbol).observe(sensorValue)
+    ## TEMP_GAUGE.inc()      # Increment by 1
+    ##TEMP_GAUGE.dec(10)    # Decrement by given value
+    TEMP_GAUGE.labels(sensorUnit.symbol).set(sensor.Value)   # Set to a given value
 
 
 def onHumidityChange(self, sensorValue, sensorUnit):
@@ -61,7 +77,7 @@ def onHumidityChange(self, sensorValue, sensorUnit):
     print("----------")
     HUMIDITY_CHANGE_COUNT.labels(sensorUnit.symbol).inc()
     HUMIDITY_HIST.labels(sensorUnit.symbol).observe(sensorValue)
-
+    HUMIDITY_GAUGE.labels(sensorUnit.symbol).set(sensor.Value)   # Set to a given value
 
 if __name__ == '__main__':
     voltageRatioInput0 = VoltageRatioInput()
