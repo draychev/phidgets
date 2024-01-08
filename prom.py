@@ -101,11 +101,11 @@ if __name__ == '__main__':
     voltageRatioInput0.setSensorType(VoltageRatioSensorType.SENSOR_TYPE_1125_TEMPERATURE)
     voltageRatioInput1.setSensorType(VoltageRatioSensorType.SENSOR_TYPE_1125_HUMIDITY)
 
+    app.run(host='0.0.0.0', port=5000)
+
     try:
         input("Press Enter to Stop\n")
     except (Exception, KeyboardInterrupt):
         pass
 
     voltageRatioInput0.close()
-
-    app.run(host='0.0.0.0', port=5000)
