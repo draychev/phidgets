@@ -3,11 +3,11 @@
 from flask import Flask, jsonify, request
 from prometheus_client import make_wsgi_app, Counter, Histogram, Gauge
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
-import time
 
 from Phidget22.Phidget import *
 from Phidget22.Devices.VoltageRatioInput import *
 
+import time
 
 app = Flask(__name__)
 
@@ -53,28 +53,24 @@ HUMIDITY_HIST = Histogram(
 )
 
 @app.route('/')
-def hello():
+def index():
     start_time = time.time()
     REQUEST_COUNT.labels('GET', '/', 200).inc()
-    response = jsonify(message='Hello, world!')
+    response = jsonify(message='Query /metrics for... metrics!')
     REQUEST_LATENCY.labels('GET', '/').observe(time.time() - start_time)
     return response
 
 def onTempChange(self, sensorValue, sensorUnit):
-    print("SensorValue: " + str(sensorValue))
-    print("SensorUnit: " + str(sensorUnit.symbol))
-    print("----------")
+    # print("SensorValue: " + str(sensorValue) " " + str(sensorUnit.symbol))
     TEMP_CHANGE_COUNT.labels(sensorUnit.symbol).inc()
     TEMP_HIST.labels(sensorUnit.symbol).observe(sensorValue)
     ## TEMP_GAUGE.inc()      # Increment by 1
-    ##TEMP_GAUGE.dec(10)    # Decrement by given value
+    ## TEMP_GAUGE.dec(10)    # Decrement by given value
     TEMP_GAUGE.labels(sensorUnit.symbol).set(sensor.Value)   # Set to a given value
 
 
 def onHumidityChange(self, sensorValue, sensorUnit):
-    print("SensorValue: " + str(sensorValue))
-    print("SensorUnit: " + str(sensorUnit.symbol))
-    print("----------")
+    # print("SensorValue: " + str(sensorValue) + " " + str(sensorUnit.symbol))
     HUMIDITY_CHANGE_COUNT.labels(sensorUnit.symbol).inc()
     HUMIDITY_HIST.labels(sensorUnit.symbol).observe(sensorValue)
     HUMIDITY_GAUGE.labels(sensorUnit.symbol).set(sensor.Value)   # Set to a given value
