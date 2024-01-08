@@ -109,3 +109,4 @@ if __name__ == '__main__':
         pass
 
     voltageRatioInput0.close()
+    voltageRatioInput1.close()
