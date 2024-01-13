@@ -1,4 +1,5 @@
 #!/bin/bash
+set auexo -pipefail
 
 # This is the script to install Tailscale on the Phidgets SBC4 computer, which is an armhf and ships with Debian Bullseye
 

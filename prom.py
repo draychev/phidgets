@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+import os
+import sys
+import time
+
 from flask import Flask, jsonify, request
 from prometheus_client import make_wsgi_app, Counter, Histogram, Gauge
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
@@ -7,7 +11,14 @@ from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from Phidget22.Phidget import *
 from Phidget22.Devices.VoltageRatioInput import *
 
-import time
+loc = os.environ.get("LOCATION")
+
+if loc is not None:
+    print("LOCATION:", loc)
+else:
+    print("LOCATION environment variable not set. Create .env with the LOCATION env var in it set to your local airport code.")
+    sys.exit(1)
+
 
 app = Flask(__name__)
 
@@ -18,32 +29,32 @@ app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
 TEMP_GAUGE = Gauge(
     'temp_gauge',
     'Temperature Celsius',
-    ['symbol'] #labels
+    ['symbol', loc] #labels
 )
 
 HUMIDITY_GAUGE = Gauge(
     'humidity_gauge',
     'Humidity Percent',
-    ['symbol'] #labels
+    ['symbol', loc] #labels
 )
 
 
 TEMP_CHANGE_COUNT = Counter(
     'temp_change_count',
     'Temperature Change Count',
-    ['symbol'] #labels
+    ['symbol', loc] #labels
 )
 
 HUMIDITY_CHANGE_COUNT = Counter(
     'humidity_change_count',
     'Humidity Change Count',
-    ['symbol']
+    ['symbol', loc]
 )
 
 TEMP_HIST = Histogram(
     'temperature_celsius',
     'Temperature Celsius',
-    ['symbol']
+    ['symbol', loc]
 )
 
 HUMIDITY_HIST = Histogram(
@@ -75,7 +86,7 @@ def onHumidityChange(self, sensorValue, sensorUnit):
     HUMIDITY_HIST.labels(sensorUnit.symbol).observe(sensorValue)
     HUMIDITY_GAUGE.labels(sensorUnit.symbol).set(sensorValue)   # Set to a given value
 
-if __name__ == '__main__':
+if __name__ == '__main__':    
     voltageRatioInput0 = VoltageRatioInput()
     voltageRatioInput1 = VoltageRatioInput()
 
