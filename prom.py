@@ -15,14 +15,14 @@ loc = os.environ.get("LOCATION")
 if loc is not None:
     print("LOCATION:", loc)
 else:
-    print("LOCATION environment variable not set. Create .env with the LOCATION env var in it set to your local airport code.")
+    print("LOCATION env var is not set. Create .env and add 'export LOCATION=xyz'")
     sys.exit(1)
 
 phidgets_serial = os.environ.get("PHIDGETS_SERIAL")
-if loc is not None:
+if phidgets_serial is not None:
     print("PHIDGETS_SERIAL:", phidgets_serial)
 else:
-    print("PHIDGETS_SERIAL environment variable not set. Create .env with the PHIDGETS_SERIAL env var in it set to your local airport code.")
+    print("PHIDGETS_SERIAL env var is not set. Create .env and add 'export PHIDGETS_SERIAL=123'")
     sys.exit(1)
 
 app = Flask(__name__)
@@ -33,67 +33,24 @@ app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
 
 labels = [loc]
 
-TEMPERATURE_GAUGE = Gauge(
-    'temperature_gauge',
-    'Temperature Celsius',
-    ['symbol', 'location']
-)
-
-HUMIDITY_GAUGE = Gauge(
-    'humidity_gauge',
-    'Humidity Percent',
-    ['symbol', 'location']
-)
-
-
-TEMPERATURE_CHANGE_COUNT = Counter(
-    'temperature_change_count',
-    'Temperature Change Count',
-    ['symbol', 'location']
-)
-
-HUMIDITY_CHANGE_COUNT = Counter(
-    'humidity_change_count',
-    'Humidity Change Count',
-    ['symbol', 'location']
-)
-
-TEMPERATURE_HIST = Histogram(
-    'temperature_celsius',
-    'Temperature Celsius',
-    ['symbol', 'location']
-)
-
-HUMIDITY_HIST = Histogram(
-    'humidity_percent',
-    'Humidity Percent',
-    ['sybmol', 'location'] #labels
-)
+TEM_GAUGE = Gauge('temperature_gauge', 'Temperature', ['symbol', 'location'])
+HUM_GAUGE = Gauge('humidity_gauge', 'Humidity', ['symbol', 'location'])
+TEM_HIST = Histogram('temperature_histogram', 'Temperature', ['symbol', 'location'])
+HUM_HIST = Histogram('humidity_histogram', 'Humidity', ['sybmol', 'location'])
 
 @app.route('/')
 def index():
-    start_time = time.time()
-    REQUEST_COUNT.labels('GET', '/', 200).inc()
-    response = jsonify(message='Query /metrics for... metrics!')
-    REQUEST_LATENCY.labels('GET', '/').observe(time.time() - start_time)
-    return response
+    return redirect('/metrics')
 
 def onTempChange(self, sensorValue, sensorUnit):
-    # print("SensorValue: " + str(sensorValue) " " + str(sensorUnit.symbol))
-    TEMPERATURE_CHANGE_COUNT.labels(sensorUnit.symbol, loc).inc()
-    TEMPERATURE_HIST.labels(sensorUnit.symbol, loc).observe(sensorValue)
-    ## TEMPERATURE_GAUGE.inc()      # Increment by 1
-    ## TEMPERATURE_GAUGE.dec(10)    # Decrement by given value
-    TEMPERATURE_GAUGE.labels(sensorUnit.symbol, loc).set(sensorValue)   # Set to a given value
-
+    TEM_HIST.labels(sensorUnit.symbol, loc).observe(sensorValue)
+    TEM_GAUGE.labels(sensorUnit.symbol, loc).set(sensorValue)
 
 def onHumidityChange(self, sensorValue, sensorUnit):
-    # print("SensorValue: " + str(sensorValue) + " " + str(sensorUnit.symbol, loc))
-    HUMIDITY_CHANGE_COUNT.labels(sensorUnit.symbol, loc).inc()
-    HUMIDITY_HIST.labels(sensorUnit.symbol, loc).observe(sensorValue)
-    HUMIDITY_GAUGE.labels(sensorUnit.symbol, loc).set(sensorValue)   # Set to a given value
+    HUM_HIST.labels(sensorUnit.symbol, loc).observe(sensorValue)
+    HUM_GAUGE.labels(sensorUnit.symbol, loc).set(sensorValue)
 
-if __name__ == '__main__':    
+if __name__ == '__main__':
     voltageRatioInput0 = VoltageRatioInput()
     voltageRatioInput1 = VoltageRatioInput()
 
@@ -116,11 +73,6 @@ if __name__ == '__main__':
     voltageRatioInput1.setSensorType(VoltageRatioSensorType.SENSOR_TYPE_1125_HUMIDITY)
 
     app.run(host='0.0.0.0', port=5000)
-
-    try:
-        input("Press Enter to Stop\n")
-    except (Exception, KeyboardInterrupt):
-        pass
 
     voltageRatioInput0.close()
     voltageRatioInput1.close()
