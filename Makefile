@@ -6,4 +6,4 @@ requirements:
 
 .PHONY: run
 run:
-	python3 ./prom.py
+	./run.sh

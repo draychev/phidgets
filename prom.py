@@ -12,13 +12,18 @@ from Phidget22.Phidget import *
 from Phidget22.Devices.VoltageRatioInput import *
 
 loc = os.environ.get("LOCATION")
-
 if loc is not None:
     print("LOCATION:", loc)
 else:
     print("LOCATION environment variable not set. Create .env with the LOCATION env var in it set to your local airport code.")
     sys.exit(1)
 
+phidgets_serial = os.environ.get("PHIDGETS_SERIAL")
+if loc is not None:
+    print("PHIDGETS_SERIAL:", loc)
+else:
+    print("PHIDGETS_SERIAL environment variable not set. Create .env with the PHIDGETS_SERIAL env var in it set to your local airport code.")
+    sys.exit(1)
 
 app = Flask(__name__)
 
@@ -94,7 +99,7 @@ if __name__ == '__main__':
 
     voltageRatioInput0.setIsHubPortDevice(True)
     voltageRatioInput0.setHubPort(0)
-    voltageRatioInput0.setDeviceSerialNumber(622942)
+    voltageRatioInput0.setDeviceSerialNumber(phidgets_serial)
 
     voltageRatioInput1.setIsHubPortDevice(True)
     voltageRatioInput1.setHubPort(1)
