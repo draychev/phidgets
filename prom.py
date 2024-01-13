@@ -26,41 +26,43 @@ app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
     '/metrics': make_wsgi_app()
 })
 
-TEMP_GAUGE = Gauge(
-    'temp_gauge',
+labels = [loc]
+
+TEMPERATURE_GAUGE = Gauge(
+    'temperature_gauge',
     'Temperature Celsius',
-    ['symbol', loc] #labels
+    ['symbol', 'location']
 )
 
 HUMIDITY_GAUGE = Gauge(
     'humidity_gauge',
     'Humidity Percent',
-    ['symbol', loc] #labels
+    ['symbol', 'location']
 )
 
 
-TEMP_CHANGE_COUNT = Counter(
-    'temp_change_count',
+TEMPERATURE_CHANGE_COUNT = Counter(
+    'temperature_change_count',
     'Temperature Change Count',
-    ['symbol', loc] #labels
+    ['symbol', 'location']
 )
 
 HUMIDITY_CHANGE_COUNT = Counter(
     'humidity_change_count',
     'Humidity Change Count',
-    ['symbol', loc]
+    ['symbol', 'location']
 )
 
-TEMP_HIST = Histogram(
+TEMPERATURE_HIST = Histogram(
     'temperature_celsius',
     'Temperature Celsius',
-    ['symbol', loc]
+    ['symbol', 'location']
 )
 
 HUMIDITY_HIST = Histogram(
     'humidity_percent',
     'Humidity Percent',
-    ['sybmol'] #labels
+    ['sybmol', 'location'] #labels
 )
 
 @app.route('/')
@@ -73,18 +75,18 @@ def index():
 
 def onTempChange(self, sensorValue, sensorUnit):
     # print("SensorValue: " + str(sensorValue) " " + str(sensorUnit.symbol))
-    TEMP_CHANGE_COUNT.labels(sensorUnit.symbol).inc()
-    TEMP_HIST.labels(sensorUnit.symbol).observe(sensorValue)
-    ## TEMP_GAUGE.inc()      # Increment by 1
-    ## TEMP_GAUGE.dec(10)    # Decrement by given value
-    TEMP_GAUGE.labels(sensorUnit.symbol).set(sensorValue)   # Set to a given value
+    TEMPERATURE_CHANGE_COUNT.labels(sensorUnit.symbol, loc).inc()
+    TEMPERATURE_HIST.labels(sensorUnit.symbol, loc).observe(sensorValue)
+    ## TEMPERATURE_GAUGE.inc()      # Increment by 1
+    ## TEMPERATURE_GAUGE.dec(10)    # Decrement by given value
+    TEMPERATURE_GAUGE.labels(sensorUnit.symbol, loc).set(sensorValue)   # Set to a given value
 
 
 def onHumidityChange(self, sensorValue, sensorUnit):
-    # print("SensorValue: " + str(sensorValue) + " " + str(sensorUnit.symbol))
-    HUMIDITY_CHANGE_COUNT.labels(sensorUnit.symbol).inc()
-    HUMIDITY_HIST.labels(sensorUnit.symbol).observe(sensorValue)
-    HUMIDITY_GAUGE.labels(sensorUnit.symbol).set(sensorValue)   # Set to a given value
+    # print("SensorValue: " + str(sensorValue) + " " + str(sensorUnit.symbol, loc))
+    HUMIDITY_CHANGE_COUNT.labels(sensorUnit.symbol, loc).inc()
+    HUMIDITY_HIST.labels(sensorUnit.symbol, loc).observe(sensorValue)
+    HUMIDITY_GAUGE.labels(sensorUnit.symbol, loc).set(sensorValue)   # Set to a given value
 
 if __name__ == '__main__':    
     voltageRatioInput0 = VoltageRatioInput()
