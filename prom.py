@@ -20,7 +20,7 @@ else:
 
 phidgets_serial = os.environ.get("PHIDGETS_SERIAL")
 if loc is not None:
-    print("PHIDGETS_SERIAL:", loc)
+    print("PHIDGETS_SERIAL:", phidgets_serial)
 else:
     print("PHIDGETS_SERIAL environment variable not set. Create .env with the PHIDGETS_SERIAL env var in it set to your local airport code.")
     sys.exit(1)
@@ -99,11 +99,11 @@ if __name__ == '__main__':
 
     voltageRatioInput0.setIsHubPortDevice(True)
     voltageRatioInput0.setHubPort(0)
-    voltageRatioInput0.setDeviceSerialNumber(phidgets_serial)
+    voltageRatioInput0.setDeviceSerialNumber(int(phidgets_serial))
 
     voltageRatioInput1.setIsHubPortDevice(True)
     voltageRatioInput1.setHubPort(1)
-    voltageRatioInput1.setDeviceSerialNumber(622942)
+    voltageRatioInput1.setDeviceSerialNumber(int(phidgets_serial))
 
     voltageRatioInput0.setOnSensorChangeHandler(onTempChange)
     voltageRatioInput1.setOnSensorChangeHandler(onHumidityChange)
