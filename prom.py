@@ -43,8 +43,16 @@ def index():
     return redirect('/metrics')
 
 def onTempChange(self, sensorValue, sensorUnit):
-    TEM_HIST.labels(sensorUnit.symbol, loc).observe(sensorValue)
-    TEM_GAUGE.labels(sensorUnit.symbol, loc).set(sensorValue)
+    temperature = sensorValue
+    symbol = sensorUnit.symbol
+
+    # sensorUnit.symbol for temperature sensor is "°C"
+    # we are converting the temperature - so we rewrite symbol to "°F"
+    temperature = (temperature * 9/5) + 32
+    symbol = "°F"
+
+    TEM_HIST.labels(symbol, loc).observe(temperature)
+    TEM_GAUGE.labels(symbol, loc).set(temperature)
 
 def onHumidityChange(self, sensorValue, sensorUnit):
     HUM_HIST.labels(sensorUnit.symbol, loc).observe(sensorValue)
