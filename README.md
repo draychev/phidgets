@@ -1,6 +1,6 @@
 # Measure Humidity and Temperature of your home with Phidgets and Prometheus
 
-Here is how to build a Prometheus Dashboard showing the temperature and humidity in your home, leveraging [Phidgets](https://www.phidgets.com/) and a box running Debian.
+Here is how to build a Prometheus Dashboard showing the **temperature** and **humidity** in your home. This projcet leverages [Phidgets](https://www.phidgets.com/) (single-board computer + sensors) and another computer running Debian.
 
 ### Hardware
 1. [Phidgets Humidity/Temperature Sensor](https://www.phidgets.com/?prodid=96) - the sensor that will measure temperature and humidity
@@ -35,5 +35,5 @@ scrape_configs:
 ```
 4. Connect to the Prometheus server: http://your-prometheus-server:9090/
 5. Query for Humidity and Temperature
-- Show a graph of `humidity_gauge{symbol="%"}` ![prom-humidity](https://github.com/draychev/phidgets/assets/49918230/d8269610-cf66-4790-82fa-9d4ac7eba61e)
-- Show a graph of `temp_gauge{symbol="°C"}` ![prom-temperature](https://github.com/draychev/phidgets/assets/49918230/8b9b7e78-68cd-40c7-9e40-49e9bb3fa8ae)
+- Show a graph of `humidity_gauge{location="SJC"}` ![prom-humidity](https://github.com/draychev/phidgets/assets/49918230/d8269610-cf66-4790-82fa-9d4ac7eba61e)
+- Show a graph of `temp_gauge{location="SJC"}` ![prom-temperature](https://github.com/draychev/phidgets/assets/49918230/8b9b7e78-68cd-40c7-9e40-49e9bb3fa8ae)
