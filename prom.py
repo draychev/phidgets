@@ -63,8 +63,8 @@ def onTempChange(self, sensorValue, sensorUnit):
     temperature = (temperature * 9/5) + 32
     symbol = "°F"
 
-    TEM_HIST.labels(comuter_name, symbol, loc).observe(temperature)
-    TEM_GAUGE.labels(comuter_name, symbol, loc).set(temperature)
+    TEM_HIST.labels(computer_name, symbol, loc).observe(temperature)
+    TEM_GAUGE.labels(computer_name, symbol, loc).set(temperature)
 
 def ping_and_get_time(destinationHost):
     # Execute the ping command
@@ -95,8 +95,8 @@ def ping_every_5_seconds():
         time.sleep(5)
 
 def onHumidityChange(self, sensorValue, sensorUnit):
-    HUM_HIST.labels(comuter_name, sensorUnit.symbol, loc).observe(sensorValue)
-    HUM_GAUGE.labels(comuter_name, sensorUnit.symbol, loc).set(sensorValue)
+    HUM_HIST.labels(computer_name, sensorUnit.symbol, loc).observe(sensorValue)
+    HUM_GAUGE.labels(computer_name, sensorUnit.symbol, loc).set(sensorValue)
 
 if __name__ == '__main__':
     voltageRatioInput0 = VoltageRatioInput()
