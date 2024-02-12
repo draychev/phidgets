@@ -41,11 +41,11 @@ app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
 
 labels = [loc]
 
-TEM_GAUGE = Gauge('temperature_gauge', 'Temperature', ['name','symbol', 'location'])
-TEM_HIST = Histogram('temperature_histogram', 'Temperature', ['name','symbol', 'location'])
+TEM_GAUGE = Gauge('temperature_gauge', 'Temperature', ['name', 'symbol', 'location'])
+TEM_HIST = Histogram('temperature_histogram', 'Temperature', ['name', 'symbol', 'location'])
 
-HUM_GAUGE = Gauge('humidity_gauge', 'Humidity', ['name','symbol', 'location'])
-HUM_HIST = Histogram('humidity_histogram', 'Humidity', ['name','symbol', 'location'])
+HUM_GAUGE = Gauge('humidity_gauge', 'Humidity', ['name', 'symbol', 'location'])
+HUM_HIST = Histogram('humidity_histogram', 'Humidity', ['name', 'symbol', 'location'])
 
 PING_GAUGE = Gauge('ping_gauge', 'Ping', ['name', 'location', 'destination'])
 PING_HIST = Histogram('ping_histogram', 'Ping', ['name', 'location', 'destination'])
@@ -95,8 +95,8 @@ def ping_every_5_seconds():
         time.sleep(5)
 
 def onHumidityChange(self, sensorValue, sensorUnit):
-    HUM_HIST.labels(sensorUnit.symbol, loc).observe(sensorValue)
-    HUM_GAUGE.labels(sensorUnit.symbol, loc).set(sensorValue)
+    HUM_HIST.labels(comuter_name, sensorUnit.symbol, loc).observe(sensorValue)
+    HUM_GAUGE.labels(comuter_name, sensorUnit.symbol, loc).set(sensorValue)
 
 if __name__ == '__main__':
     voltageRatioInput0 = VoltageRatioInput()
