@@ -41,11 +41,11 @@ app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
 
 labels = [loc]
 
-TEM_GAUGE = Gauge('temperature_gauge', 'Temperature', ['symbol', 'location'])
-TEM_HIST = Histogram('temperature_histogram', 'Temperature', ['symbol', 'location'])
+TEM_GAUGE = Gauge('temperature_gauge', 'Temperature', ['name','symbol', 'location'])
+TEM_HIST = Histogram('temperature_histogram', 'Temperature', ['name','symbol', 'location'])
 
-HUM_GAUGE = Gauge('humidity_gauge', 'Humidity', ['symbol', 'location'])
-HUM_HIST = Histogram('humidity_histogram', 'Humidity', ['sybmol', 'location'])
+HUM_GAUGE = Gauge('humidity_gauge', 'Humidity', ['name','symbol', 'location'])
+HUM_HIST = Histogram('humidity_histogram', 'Humidity', ['name','symbol', 'location'])
 
 PING_GAUGE = Gauge('ping_gauge', 'Ping', ['name', 'location', 'destination'])
 PING_HIST = Histogram('ping_histogram', 'Ping', ['name', 'location', 'destination'])
@@ -63,8 +63,8 @@ def onTempChange(self, sensorValue, sensorUnit):
     temperature = (temperature * 9/5) + 32
     symbol = "°F"
 
-    TEM_HIST.labels(symbol, loc).observe(temperature)
-    TEM_GAUGE.labels(symbol, loc).set(temperature)
+    TEM_HIST.labels(comuter_name, symbol, loc).observe(temperature)
+    TEM_GAUGE.labels(comuter_name, symbol, loc).set(temperature)
 
 def ping_and_get_time(destinationHost):
     # Execute the ping command
