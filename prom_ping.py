@@ -29,35 +29,45 @@ app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
 
 labels = [loc]
 
-PING_GAUGE = Gauge('ping_gauge', 'Ping', ['name', 'location'])
-PING_HIST = Histogram('ping_histogram', 'Ping', ['name', 'location'])
+PING_GAUGE = Gauge('ping_gauge', 'Ping', ['name', 'location', 'destination'])
+PING_HIST = Histogram('ping_histogram', 'Ping', ['name', 'location', 'destination'])
 
 @app.route('/')
 def index():
     return redirect('/metrics')
 
-def ping_and_get_time():
+def ping_and_get_time(destinationHost):
     # Execute the ping command
-    command = ['ping', '-c', '1', '8.8.8.8']
+    command = ['ping', '-c', '1', destinationHost]
     try:
         output = subprocess.check_output(command, universal_newlines=True)
 
         # Use regex to find the time value in the output
-        match = re.search(r'time=(\d+\.\d+) ms', output)
+        match = re.search(r'time=(\d+\.?\d*) ms', output)
         if match:
             # Return the time in milliseconds
             return float(match.group(1))
         else:
-            return "Time not found in ping output."
+            print(f"Time not found in ping output: {output}")
+            return 0
     except subprocess.CalledProcessError as e:
-        return f"Failed to execute ping: {str(e)}"
+        print(f"Failed to execute ping: {str(e)}")
+        return 0
 
 def ping_every_5_seconds():
     while True:
-        ping_time = ping_and_get_time()
-        PING_HIST.labels(computer_name, loc).observe(ping_time)
-        PING_GAUGE.labels(computer_name, loc).set(ping_time)
-        print(ping_time)
+        ### First measure ping to 8.8.8.8
+        destinationHost = '8.8.8.8'
+        ping_time = ping_and_get_time(destinationHost)
+        PING_HIST.labels(computer_name, loc, destinationHost).observe(ping_time)
+        PING_GAUGE.labels(computer_name, loc, destinationHost).set(ping_time)
+
+        ### Then measure ping to sz.inetg.bg
+        destinationHost = 'sz.inetg.bg'
+        ping_time = ping_and_get_time(destinationHost)
+        PING_HIST.labels(computer_name, loc, destinationHost).observe(ping_time)
+        PING_GAUGE.labels(computer_name, loc, destinationHost).set(ping_time)
+
         time.sleep(5)
 
 if __name__ == '__main__':
