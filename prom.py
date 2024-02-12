@@ -71,7 +71,7 @@ def ping_and_get_time(destinationHost):
         output = subprocess.check_output(command, universal_newlines=True)
 
         # Use regex to find the time value in the output
-        match = re.search(r'time=(\d+\.\d+) ms', output)
+        match = re.search(r'time=(\d+\.?\d*) ms', output)
         if match:
             # Return the time in milliseconds
             return float(match.group(1))
