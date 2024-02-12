@@ -87,6 +87,7 @@ def ping_and_get_time(destinationHost):
 def ping_every_5_seconds():
     while True:
         for destinationHost in ping_hosts:
+            print(f"Working on Ping Host {destinationHost}")
             ping_time = ping_and_get_time(destinationHost)
             if ping_time != -1:
                 PING_HIST.labels(computer_name, loc, destinationHost).observe(ping_time)
