@@ -98,6 +98,13 @@ def ping_every_5_seconds():
             PING_HIST.labels(computer_name, loc, destinationHost).observe(ping_time)
             PING_GAUGE.labels(computer_name, loc, destinationHost).set(ping_time)
 
+        ### Then measure ping to asr033.ddns.net
+        destinationHost = 'asr033.ddns.net'
+        ping_time = ping_and_get_time(destinationHost)
+        if ping_time != -1:
+            PING_HIST.labels(computer_name, loc, destinationHost).observe(ping_time)
+            PING_GAUGE.labels(computer_name, loc, destinationHost).set(ping_time)
+
         time.sleep(5)
 
 def onHumidityChange(self, sensorValue, sensorUnit):
