@@ -45,8 +45,8 @@ TEM_HIST = Histogram('temperature_histogram', 'Temperature', ['symbol', 'locatio
 HUM_GAUGE = Gauge('humidity_gauge', 'Humidity', ['symbol', 'location'])
 HUM_HIST = Histogram('humidity_histogram', 'Humidity', ['sybmol', 'location'])
 
-PING_GAUGE = Gauge('ping_gauge', 'Ping', ['name', 'location'])
-PING_HIST = Histogram('ping_histogram', 'Ping', ['name', 'location'])
+PING_GAUGE = Gauge('ping_gauge', 'Ping', ['name', 'location', 'destination'])
+PING_HIST = Histogram('ping_histogram', 'Ping', ['name', 'location', 'destination'])
 
 @app.route('/')
 def index():
@@ -64,9 +64,9 @@ def onTempChange(self, sensorValue, sensorUnit):
     TEM_HIST.labels(symbol, loc).observe(temperature)
     TEM_GAUGE.labels(symbol, loc).set(temperature)
 
-def ping_and_get_time():
+def ping_and_get_time(destinationHost):
     # Execute the ping command
-    command = ['ping', '-c', '1', '8.8.8.8']
+    command = ['ping', '-c', '1', destinationHost]
     try:
         output = subprocess.check_output(command, universal_newlines=True)
 
@@ -84,9 +84,18 @@ def ping_and_get_time():
 
 def ping_every_5_seconds():
     while True:
-        ping_time = ping_and_get_time()
-        PING_HIST.labels(computer_name, loc).observe(ping_time)
-        PING_GAUGE.labels(computer_name, loc).set(ping_time)
+        ### First measure ping to 8.8.8.8
+        destinationHost = '8.8.8.8'
+        ping_time = ping_and_get_time(destinationHost)
+        PING_HIST.labels(computer_name, loc, destinationHost).observe(ping_time)
+        PING_GAUGE.labels(computer_name, loc, destinationHost).set(ping_time)
+
+        ### Then measure ping to sz.inetg.bg
+        destinationHost = 'sz.inetg.bg'
+        ping_time = ping_and_get_time(destinationHost)
+        PING_HIST.labels(computer_name, loc, destinationHost).observe(ping_time)
+        PING_GAUGE.labels(computer_name, loc, destinationHost).set(ping_time)
+
         time.sleep(5)
 
 def onHumidityChange(self, sensorValue, sensorUnit):
