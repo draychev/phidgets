@@ -76,16 +76,17 @@ def ping_and_get_time():
             # Return the time in milliseconds
             return float(match.group(1))
         else:
-            return "Time not found in ping output."
+            print(f"Time not found in ping output: {output}")
+            return 0
     except subprocess.CalledProcessError as e:
-        return f"Failed to execute ping: {str(e)}"
+        print(f"Failed to execute ping: {str(e)}")
+        return 0
 
 def ping_every_5_seconds():
     while True:
         ping_time = ping_and_get_time()
         PING_HIST.labels(computer_name, loc).observe(ping_time)
         PING_GAUGE.labels(computer_name, loc).set(ping_time)
-        print(time_result)
         time.sleep(5)
 
 def onHumidityChange(self, sensorValue, sensorUnit):
