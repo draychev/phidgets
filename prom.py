@@ -28,6 +28,8 @@ else:
     print("PHIDGETS_SERIAL env var is not set. Create .env and add 'export PHIDGETS_SERIAL=123'")
     sys.exit(1)
 
+ping_hosts = [host.strip() for host in os.getenv('PING_HOSTS', '').split(',')]
+
 system_info = os.uname()
 computer_name = system_info.nodename
 
@@ -84,27 +86,11 @@ def ping_and_get_time(destinationHost):
 
 def ping_every_5_seconds():
     while True:
-        ### First measure ping to 8.8.8.8
-        destinationHost = '8.8.8.8'
-        ping_time = ping_and_get_time(destinationHost)
-        if ping_time != -1:
-            PING_HIST.labels(computer_name, loc, destinationHost).observe(ping_time)
-            PING_GAUGE.labels(computer_name, loc, destinationHost).set(ping_time)
-
-        ### Then measure ping to sz.inetg.bg
-        destinationHost = 'sz.inetg.bg'
-        ping_time = ping_and_get_time(destinationHost)
-        if ping_time != -1:
-            PING_HIST.labels(computer_name, loc, destinationHost).observe(ping_time)
-            PING_GAUGE.labels(computer_name, loc, destinationHost).set(ping_time)
-
-        ### Then measure ping to asr033.ddns.net
-        destinationHost = 'asr033.ddns.net'
-        ping_time = ping_and_get_time(destinationHost)
-        if ping_time != -1:
-            PING_HIST.labels(computer_name, loc, destinationHost).observe(ping_time)
-            PING_GAUGE.labels(computer_name, loc, destinationHost).set(ping_time)
-
+        for destinationHost in ping_hosts:
+            ping_time = ping_and_get_time(destinationHost)
+            if ping_time != -1:
+                PING_HIST.labels(computer_name, loc, destinationHost).observe(ping_time)
+                PING_GAUGE.labels(computer_name, loc, destinationHost).set(ping_time)
         time.sleep(5)
 
 def onHumidityChange(self, sensorValue, sensorUnit):
